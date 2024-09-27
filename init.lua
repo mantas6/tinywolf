@@ -64,7 +64,7 @@ local function handle_request(client)
 end
 
 -- Create and bind the server socket
-local server = assert(socket.bind("*", 5001))
+local server = assert(socket.bind("0.0.0.0", 5001))
 print("Server running on port 5001...")
 
 -- Main loop to accept and handle client connections
