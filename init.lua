@@ -46,9 +46,21 @@ local function send_wol(mac)
 
     -- Create a UDP socket
     local udp = socket.udp()
-    udp:setpeername("255.255.255.255", wol_port) -- Broadcast to the WOL port
-    udp:send(packet) -- Send the magic packet
-    udp:close()
+    if not udp then
+        print("Error creating UDP socket")
+        return
+    end
+
+    -- Set socket options for broadcasting
+    udp:setoption("broadcast", true)
+
+    -- Send the magic packet
+    local success, err = udp:sendto(packet, "255.255.255.255", wol_port) -- Use sendto for broadcasting
+    if not success then
+        print("Error sending WOL packet:", err)
+    end
+
+    udp:close() -- Close the socket
 end
 
 -- Function to handle HTTP requests
