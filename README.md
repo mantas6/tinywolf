@@ -12,7 +12,9 @@ Example: GET `/wol/your-hostname`
 - `dnsmasq`
 - `wakeonlan`
 
-Installs as `systemd` user service
+Installs as `systemd` user service.
+
+Tested and ran on Debian 12.
 
 ## Firewall setup
 
