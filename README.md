@@ -4,6 +4,8 @@ Uses dnsmasq leases file to automatically map hostnames to hardware addresses.
 
 Listens for HTTP requests with hostnames and sends WOL packets accordingly.
 
+Example: GET `/wol/your-hostname`
+
 ## Dependencies
 
 - `luarocks`
