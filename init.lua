@@ -4,6 +4,7 @@ local http = require("socket.http")
 
 -- Configuration
 local leases_file = "/var/lib/misc/dnsmasq.leases" -- Path to your dnsmasq leases file
+local wol_port = 9 -- Default WOL port
 
 -- Function to read the leases file and find the MAC address based on hostname
 local function get_mac_from_hostname(hostname)
@@ -27,9 +28,25 @@ end
 
 -- Function to execute the wol command
 local function wake_on_lan(mac)
-    -- Assuming the `wol` command is installed and available in the system
-    local command = "wakeonlan " .. mac
-    os.execute(command)
+    -- Remove colons from MAC address if present
+    mac = mac:gsub(":", "")
+
+    -- Create a magic packet
+    local packet = "\xFF\xFF\xFF\xFF\xFF\xFF" -- 6 bytes of 0xFF
+    for _ = 1, 16 do
+        packet = packet .. mac:sub(1, 2):char(tonumber(mac:sub(1, 2), 16)) .. 
+                         mac:sub(3, 4):char(tonumber(mac:sub(3, 4), 16)) ..
+                         mac:sub(5, 6):char(tonumber(mac:sub(5, 6), 16)) ..
+                         mac:sub(7, 8):char(tonumber(mac:sub(7, 8), 16)) ..
+                         mac:sub(9, 10):char(tonumber(mac:sub(9, 10), 16)) ..
+                         mac:sub(11, 12):char(tonumber(mac:sub(11, 12), 16))
+    end
+
+    -- Create a UDP socket
+    local udp = socket.udp()
+    udp:setpeername("255.255.255.255", wol_port) -- Broadcast to the WOL port
+    udp:send(packet) -- Send the magic packet
+    udp:close()
 end
 
 -- Function to handle HTTP requests
