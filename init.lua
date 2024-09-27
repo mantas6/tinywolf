@@ -67,7 +67,7 @@ local function handle_request(client)
             local mac, err = get_mac_from_hostname(hostname)
             if mac then
                 -- Trigger the Wake-on-LAN
-                wake_on_lan(mac)
+                send_wol(mac)
                 client:send("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nWOL packet sent to " .. mac .. "\n")
             else
                 client:send("HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\nError: " .. err .. "\n")
