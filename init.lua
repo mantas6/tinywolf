@@ -28,7 +28,7 @@ end
 -- Function to execute the wol command
 local function wake_on_lan(mac)
     -- Assuming the `wol` command is installed and available in the system
-    local command = "wol " .. mac
+    local command = "wakeonlan " .. mac
     os.execute(command)
 end
 
