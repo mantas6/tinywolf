@@ -16,6 +16,14 @@ Installs as `systemd` user service.
 
 Tested and ran on Debian 12.
 
+## Start on boot
+
+Systemd user services typically won't work as expected. Use this:
+
+```
+loginctl enable-linger
+```
+
 ## Firewall setup
 
 ```
