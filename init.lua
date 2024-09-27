@@ -4,7 +4,6 @@ local http = require("socket.http")
 
 -- Configuration
 local leases_file = "/var/lib/misc/dnsmasq.leases" -- Path to your dnsmasq leases file
-local wol_port = 9 -- Default WOL port
 
 -- Function to read the leases file and find the MAC address based on hostname
 local function get_mac_from_hostname(hostname)
@@ -26,41 +25,11 @@ local function get_mac_from_hostname(hostname)
     return nil, "Hostname not found in leases"
 end
 
--- Function to send Wake-on-LAN magic packet
-local function send_wol(mac)
-    -- Remove colons from MAC address if present
-    mac = mac:gsub(":", "")
-
-    -- Create a magic packet
-    local packet = "\xFF\xFF\xFF\xFF\xFF\xFF" -- 6 bytes of 0xFF
-    for _ = 1, 16 do
-        packet = packet .. string.char(
-            tonumber(mac:sub(1, 2), 16),
-            tonumber(mac:sub(3, 4), 16),
-            tonumber(mac:sub(5, 6), 16),
-            tonumber(mac:sub(7, 8), 16),
-            tonumber(mac:sub(9, 10), 16),
-            tonumber(mac:sub(11, 12), 16)
-        )
-    end
-
-    -- Create a UDP socket
-    local udp = socket.udp()
-    if not udp then
-        print("Error creating UDP socket")
-        return
-    end
-
-    -- Set socket options for broadcasting
-    udp:setoption("broadcast", true)
-
-    -- Send the magic packet
-    local success, err = udp:sendto(packet, "255.255.255.255", wol_port) -- Use sendto for broadcasting
-    if not success then
-        print("Error sending WOL packet:", err)
-    end
-
-    udp:close() -- Close the socket
+-- Function to execute the wol command
+local function wake_on_lan(mac)
+    -- Assuming the `wol` command is installed and available in the system
+    local command = "wol " .. mac
+    os.execute(command)
 end
 
 -- Function to handle HTTP requests
@@ -79,7 +48,7 @@ local function handle_request(client)
             local mac, err = get_mac_from_hostname(hostname)
             if mac then
                 -- Trigger the Wake-on-LAN
-                send_wol(mac)
+                wake_on_lan(mac)
                 client:send("HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\n\r\nWOL packet sent to " .. mac .. "\n")
             else
                 client:send("HTTP/1.1 404 Not Found\r\nContent-Type: text/plain\r\n\r\nError: " .. err .. "\n")
