@@ -1,0 +1,13 @@
+#!/bin/sh
+
+luarocks install luasocket --local
+
+svc_dir="$HOME/.config/systemd/user"
+svc_name='tinywolf.service'
+
+mkdir -p "$svc_dir"
+cp -iv "$svc_name" "$svc_dir"
+
+systemctl --user daemon-reload
+systemctl --user enable "$svc_name" --now
+

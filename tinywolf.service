@@ -1,0 +1,12 @@
+[Unit]
+Description=Tinywolf service
+After=network.target
+
+[Service]
+ExecStart=%h/Repos/tinywolf/run
+WorkingDirectory=%h/Repos/tinywolf
+Restart=on-failure
+RestartSec=60s
+
+[Install]
+WantedBy=default.target
