@@ -4,6 +4,14 @@ Uses dnsmasq leases file to automatically map hostnames to hardware addresses.
 
 Listens for HTTP requests with hostnames and sends WOL packets accordingly.
 
+## Dependencies
+
+- `luarocks`
+- `dnsmasq`
+- `wakeonlan`
+
+Installs as `systemd` user service
+
 ## Firewall setup
 
 ```
