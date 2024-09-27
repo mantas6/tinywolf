@@ -26,20 +26,22 @@ local function get_mac_from_hostname(hostname)
     return nil, "Hostname not found in leases"
 end
 
--- Function to execute the wol command
-local function wake_on_lan(mac)
+-- Function to send Wake-on-LAN magic packet
+local function send_wol(mac)
     -- Remove colons from MAC address if present
     mac = mac:gsub(":", "")
 
     -- Create a magic packet
     local packet = "\xFF\xFF\xFF\xFF\xFF\xFF" -- 6 bytes of 0xFF
     for _ = 1, 16 do
-        packet = packet .. mac:sub(1, 2):char(tonumber(mac:sub(1, 2), 16)) .. 
-                         mac:sub(3, 4):char(tonumber(mac:sub(3, 4), 16)) ..
-                         mac:sub(5, 6):char(tonumber(mac:sub(5, 6), 16)) ..
-                         mac:sub(7, 8):char(tonumber(mac:sub(7, 8), 16)) ..
-                         mac:sub(9, 10):char(tonumber(mac:sub(9, 10), 16)) ..
-                         mac:sub(11, 12):char(tonumber(mac:sub(11, 12), 16))
+        packet = packet .. string.char(
+            tonumber(mac:sub(1, 2), 16),
+            tonumber(mac:sub(3, 4), 16),
+            tonumber(mac:sub(5, 6), 16),
+            tonumber(mac:sub(7, 8), 16),
+            tonumber(mac:sub(9, 10), 16),
+            tonumber(mac:sub(11, 12), 16)
+        )
     end
 
     -- Create a UDP socket
